@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="GlucoLog">
+<meta name="theme-color" content="#2d8a55">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>GlucoLog</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --ff:'DM Sans',system-ui,sans-serif;
+  --ff-mono:'DM Mono',monospace;
+
+  --bg:#f7f8f6;
+  --surface:#ffffff;
+  --surface2:#f0f2ef;
+  --surface3:#e6e9e4;
+  --text:#16201a;
+  --text2:#3d5044;
+  --text3:#7a9080;
+  --border:rgba(45,138,85,0.1);
+  --border2:rgba(45,138,85,0.2);
+
+  --green:#2d8a55;
+  --green-bg:#f0f9f4;
+  --green-border:#9ed4b8;
+  --green-text:#1a5c35;
+  --green-dark:#0e3320;
+
+  --orange:#c96a1a;
+  --orange-bg:#fff4eb;
+  --orange-border:#f0b87a;
+  --orange-text:#7a3500;
+  --orange-dark:#3d1a00;
+
+  --blue:#2060a8;
+  --blue-bg:#eef4fc;
+  --blue-border:#90bde8;
+  --blue-text:#0d3a6e;
+  --blue-dark:#051e3d;
+
+  --neutral-bg:#f2f4f1;
+  --neutral-border:#c8d0c4;
+  --neutral-text:#404840;
+
+  --red:#c0392b;
+  --red-bg:#fef0ee;
+  --red-border:#f0a899;
+  --red-text:#7a1a10;
+
+  --radius:14px;
+  --radius-sm:9px;
+  --radius-xs:6px;
+
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#111814;
+    --surface:#1a2018;
+    --surface2:#222c20;
+    --surface3:#2c3829;
+    --text:#e8f0e4;
+    --text2:#a0b89a;
+    --text3:#607060;
+    --border:rgba(100,180,120,0.12);
+    --border2:rgba(100,180,120,0.22);
+    --green-bg:#0e2e1c;--green-border:#2d6644;--green-text:#7dd4a0;
+    --orange-bg:#2a1400;--orange-border:#7a3800;--orange-text:#f0a060;
+    --blue-bg:#071830;--blue-border:#1a4070;--blue-text:#70a8e0;
+    --neutral-bg:#1e2420;--neutral-border:#384434;--neutral-text:#90a890;
+    --red-bg:#2a0e0a;--red-border:#6a2018;--red-text:#f0907a;
+  }
+}
+
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:var(--ff);
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;
+  line-height:1.5;
+  display:flex;
+  flex-direction:column;
+  padding-top:var(--safe-top);
+}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+/* ── HEADER ── */
+.app-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px 10px;
+  background:var(--surface);
+  border-bottom:0.5px solid var(--border2);
+  flex-shrink:0;
+}
+.header-left h1{font-size:18px;font-weight:500;letter-spacing:-.02em;color:var(--text)}
+.header-left .sub{font-size:12px;color:var(--text3);margin-top:1px}
+.header-right{display:flex;align-items:center;gap:8px}
+
+/* Glucose badge */
+.gl-badge{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:20px;
+  background:var(--surface2);border:0.5px solid var(--border2);
+  font-size:13px;font-weight:500;cursor:pointer;
+}
+.gl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.gl-dot.in-range{background:var(--green)}
+.gl-dot.high{background:var(--orange)}
+.gl-dot.low{background:var(--red)}
+.gl-dot.unknown{background:var(--text3)}
+
+.icon-btn{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:none;border:0.5px solid var(--border2);
+  color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;transition:background .15s;
+}
+.icon-btn:active{background:var(--surface2)}
+
+/* ── CONTEXT BAR ── */
+.context-bar{
+  display:flex;gap:6px;padding:8px 16px;
+  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+  background:var(--surface);border-bottom:0.5px solid var(--border);
+}
+.context-bar::-webkit-scrollbar{display:none}
+.ctx-chip{
+  white-space:nowrap;padding:5px 11px;border-radius:20px;
+  border:0.5px solid var(--border2);background:var(--surface2);
+  color:var(--text2);font-size:12px;cursor:pointer;flex-shrink:0;
+  transition:background .15s;
+}
+.ctx-chip i{font-size:13px;vertical-align:-1px;margin-right:3px}
+
+/* ── VIEWS ── */
+.view{display:none;flex:1;overflow:hidden;flex-direction:column}
+.view.active{display:flex}
+
+/* ── CHAT ── */
+.chat-msgs{
+  flex:1;overflow-y:auto;
+  padding:12px 16px 8px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.msg{max-width:86%;font-size:14px;line-height:1.6}
+.msg.ai{
+  align-self:flex-start;
+  background:var(--surface);
+  border:0.5px solid var(--border2);
+  border-radius:16px 16px 16px 3px;
+  padding:10px 13px;
+  color:var(--text);
+}
+.msg.user{
+  align-self:flex-end;
+  background:var(--green);
+  border-radius:16px 16px 3px 16px;
+  padding:10px 13px;
+  color:#fff;
+}
+.msg.system-note{
+  align-self:center;max-width:94%;
+  background:var(--orange-bg);border:0.5px solid var(--orange-border);
+  border-radius:var(--radius-sm);padding:9px 12px;
+  font-size:13px;color:var(--orange-text);text-align:center;
+}
+
+/* Inline cards inside chat */
+.meal-card{
+  background:var(--green-bg);border:0.5px solid var(--green-border);
+  border-radius:var(--radius-sm);padding:11px 13px;margin-top:6px;
+}
+.meal-card-title{font-size:13px;font-weight:500;color:var(--green-text);margin-bottom:5px}
+.meal-card-detail{font-size:12px;color:var(--green-text);opacity:.8;margin-bottom:8px;line-height:1.5}
+.pill-row{display:flex;gap:5px;flex-wrap:wrap}
+.pill{font-size:11px;padding:3px 8px;border-radius:20px;border:0.5px solid}
+.pill-green{background:var(--surface);border-color:var(--green-border);color:var(--green-text)}
+.pill-blue{background:var(--surface);border-color:var(--blue-border);color:var(--blue-text)}
+.pill-est{background:var(--green-bg);border-color:var(--green-border);color:var(--green-text);font-weight:500}
+
+.dose-card{
+  background:var(--blue-bg);border:0.5px solid var(--blue-border);
+  border-radius:var(--radius-sm);padding:11px 13px;margin-top:6px;
+}
+.dose-card-num{font-size:28px;font-weight:500;color:var(--blue-text);line-height:1}
+.dose-card-label{font-size:12px;color:var(--blue-text);opacity:.8;margin-top:2px}
+.dose-card-split{font-size:12px;color:var(--blue-text);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--blue-border)}
+.dose-reasoning{font-size:12px;color:var(--blue-text);margin-top:8px;display:none;line-height:1.6}
+.dose-reasoning.open{display:block}
+.toggle-reason{font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;text-decoration:underline;padding:4px 0 0}
+
+/* Loading dots */
+.typing{display:flex;gap:4px;align-items:center;padding:4px 2px}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce .9s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* Quick actions */
+.quick-row{
+  padding:8px 16px 6px;
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+.quick-row::-webkit-scrollbar{display:none}
+.qa{
+  white-space:nowrap;padding:7px 13px;border-radius:20px;
+  border:0.5px solid var(--border2);background:var(--surface);
+  color:var(--text2);font-size:13px;cursor:pointer;flex-shrink:0;
+  transition:background .15s;
+}
+.qa i{font-size:14px;vertical-align:-1px;margin-right:4px}
+.qa:active{background:var(--surface2)}
+
+/* Input row */
+.input-row{
+  padding:8px 16px calc(8px + var(--safe-bottom));
+  display:flex;gap:8px;align-items:flex-end;
+  background:var(--surface);border-top:0.5px solid var(--border2);
+  flex-shrink:0;
+}
+.chat-input{
+  flex:1;padding:10px 14px;
+  border-radius:22px;
+  border:0.5px solid var(--border2);
+  background:var(--surface2);
+  color:var(--text);font-size:14px;
+  resize:none;max-height:120px;
+  font-family:var(--ff);outline:none;
+  transition:border-color .15s;
+}
+.chat-input:focus{border-color:var(--green)}
+.send-btn{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--green);border:none;color:#fff;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;transition:opacity .15s;
+}
+.send-btn:disabled{opacity:.4}
+
+/* ── LOG VIEW ── */
+.log-header{
+  padding:12px 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);border-bottom:0.5px solid var(--border2);
+  flex-shrink:0;
+}
+.log-header h2{font-size:17px;font-weight:500}
+.log-scroll{flex:1;overflow-y:auto;padding:12px 16px}
+
+.day-group{margin-bottom:20px}
+.day-label{
+  font-size:11px;font-weight:500;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.07em;
+  margin-bottom:8px;padding:0 2px;
+}
+.log-card{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;margin-bottom:7px;
+}
+.log-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.log-time{font-size:12px;color:var(--text3);font-family:var(--ff-mono)}
+.log-title{font-size:14px;font-weight:500;margin-bottom:3px}
+.log-detail{font-size:13px;color:var(--text2);line-height:1.5}
+.log-macros{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.log-macro{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--surface2);color:var(--text2);border:0.5px solid var(--border)}
+.log-est{font-size:11px;padding:3px 8px;border-radius:20px;border:0.5px solid}
+
+.tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:0.5px solid}
+.tag-meal{background:var(--green-bg);border-color:var(--green-border);color:var(--green-text)}
+.tag-insulin{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue-text)}
+.tag-glucose{background:var(--neutral-bg);border-color:var(--neutral-border);color:var(--neutral-text)}
+.tag-exercise{background:var(--green-bg);border-color:var(--green-border);color:var(--green-text)}
+.tag-substance{background:var(--orange-bg);border-color:var(--orange-border);color:var(--orange-text)}
+.tag-skipped{background:var(--neutral-bg);border-color:var(--neutral-border);color:var(--neutral-text)}
+.tag-blackout{background:var(--surface3);border-color:var(--neutral-border);color:var(--neutral-text)}
+.tag-weight{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue-text)}
+
+.blackout-card{
+  background:var(--surface2);border:0.5px dashed var(--neutral-border);
+  border-radius:var(--radius);padding:11px 14px;margin-bottom:7px;
+  display:flex;align-items:center;gap:10px;
+}
+.blackout-card i{font-size:20px;color:var(--text3)}
+
+/* ── INSIGHTS ── */
+.insights-scroll{flex:1;overflow-y:auto;padding:12px 16px}
+.insight-card{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+}
+.insight-card h3{
+  font-size:13px;font-weight:500;color:var(--text2);
+  margin-bottom:10px;display:flex;align-items:center;gap:7px;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.insight-card h3 i{font-size:17px;color:var(--green)}
+
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.stat-card{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:11px 12px;
+}
+.stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.stat-num{font-size:22px;font-weight:500;color:var(--text);font-family:var(--ff-mono)}
+.stat-unit{font-size:12px;color:var(--text3);margin-left:2px;font-family:var(--ff)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+.tir-bar{height:22px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:6px}
+.tir-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:rgba(255,255,255,.9)}
+.tir-low{background:var(--red)}
+.tir-in{background:var(--green)}
+.tir-high{background:var(--orange)}
+
+.ratio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ratio-tile{
+  background:var(--surface2);border-radius:var(--radius-sm);
+  padding:10px 11px;text-align:center;
+}
+.ratio-tile.active-now{background:var(--green-bg);border:0.5px solid var(--green-border)}
+.ratio-time-lbl{font-size:11px;color:var(--text3);margin-bottom:3px}
+.ratio-val{font-size:20px;font-weight:500;color:var(--text);font-family:var(--ff-mono)}
+.ratio-val.active-now{color:var(--green-text)}
+.ratio-sub{font-size:11px;color:var(--text3);margin-top:1px}
+
+.istat{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:0.5px solid var(--border)}
+.istat:last-child{border-bottom:none}
+.istat-lbl{font-size:13px;color:var(--text2)}
+.istat-val{font-size:13px;font-weight:500;font-family:var(--ff-mono)}
+
+.pattern-chip{
+  display:inline-block;font-size:12px;padding:4px 10px;
+  border-radius:20px;margin:3px;
+  background:var(--orange-bg);border:0.5px solid var(--orange-border);color:var(--orange-text);
+}
+
+.acc-bar{height:7px;border-radius:4px;background:var(--surface3);overflow:hidden;margin-top:5px}
+.acc-fill{height:100%;border-radius:4px;background:var(--green)}
+
+/* Dexcom connect */
+.dex-connect{
+  background:var(--blue-bg);border:0.5px solid var(--blue-border);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+}
+.dex-icon{
+  width:42px;height:42px;border-radius:var(--radius-sm);
+  background:var(--blue);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:22px;flex-shrink:0;
+}
+.dex-connect h3{font-size:14px;font-weight:500;color:var(--blue-text);margin-bottom:2px}
+.dex-connect p{font-size:12px;color:var(--blue-text);opacity:.75}
+.dex-arrow{margin-left:auto;color:var(--blue-text);font-size:18px;opacity:.6}
+
+/* ── SETTINGS ── */
+.settings-scroll{flex:1;overflow-y:auto;padding:12px 16px}
+.settings-section{margin-bottom:20px}
+.settings-section h2{
+  font-size:11px;font-weight:500;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;
+}
+.settings-group{
+  background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 14px;border-bottom:0.5px solid var(--border);
+  gap:12px;
+}
+.settings-row:last-child{border-bottom:none}
+.settings-row-stacked{
+  flex-direction:column;align-items:flex-start;gap:8px;
+  padding:13px 14px;border-bottom:0.5px solid var(--border);
+}
+.settings-row-stacked:last-child{border-bottom:none}
+.s-label{font-size:14px;color:var(--text)}
+.s-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.s-input{
+  background:var(--surface2);border:0.5px solid var(--border2);
+  border-radius:var(--radius-xs);padding:5px 10px;
+  font-size:14px;color:var(--text);
+  font-family:var(--ff-mono);text-align:right;
+}
+.s-input-wide{width:100%;text-align:left;font-family:var(--ff)}
+.s-input:focus{outline:none;border-color:var(--green)}
+
+.toggle{position:relative;width:44px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{
+  position:absolute;inset:0;background:var(--surface3);
+  border-radius:13px;cursor:pointer;transition:background .2s;
+}
+.toggle-track:before{
+  content:'';position:absolute;width:22px;height:22px;
+  left:2px;top:2px;background:white;border-radius:50%;
+  transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle input:checked+.toggle-track{background:var(--green)}
+.toggle input:checked+.toggle-track:before{transform:translateX(18px)}
+
+.danger-btn{
+  font-size:13px;color:var(--red-text);background:none;
+  border:none;cursor:pointer;padding:0;
+}
+.action-btn{
+  font-size:13px;color:var(--blue-text);background:none;
+  border:none;cursor:pointer;padding:0;
+}
+.primary-btn{
+  width:100%;padding:13px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:15px;
+  font-weight:500;cursor:pointer;font-family:var(--ff);
+  transition:opacity .15s;
+}
+.primary-btn:active{opacity:.85}
+.secondary-btn{
+  width:100%;padding:12px;background:var(--surface);color:var(--text);
+  border:0.5px solid var(--border2);border-radius:var(--radius-sm);
+  font-size:15px;cursor:pointer;font-family:var(--ff);margin-top:8px;
+}
+
+/* ── ONBOARDING ── */
+#view-onboard{
+  background:var(--bg);padding:0;
+  overflow-y:auto;
+}
+.onboard-inner{
+  padding:32px 20px calc(32px + var(--safe-bottom));
+  max-width:480px;margin:0 auto;
+  display:flex;flex-direction:column;gap:20px;
+}
+.logo-mark{
+  width:52px;height:52px;background:var(--green);
+  border-radius:14px;display:flex;align-items:center;
+  justify-content:center;font-size:26px;color:#fff;
+}
+.onboard-title{font-size:24px;font-weight:500;letter-spacing:-.02em;line-height:1.2}
+.onboard-title span{color:var(--green)}
+.onboard-body{font-size:14px;color:var(--text2);line-height:1.7}
+.onboard-card{
+  background:var(--surface);border:0.5px solid var(--border2);
+  border-radius:var(--radius);padding:14px 16px;
+}
+.onboard-card h3{font-size:14px;font-weight:500;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.onboard-card h3 i{font-size:18px;color:var(--green)}
+.onboard-card p{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  display:flex;background:var(--surface);
+  border-top:0.5px solid var(--border2);
+  padding-bottom:var(--safe-bottom);
+  flex-shrink:0;
+}
+.nav-btn{
+  flex:1;padding:10px 4px 8px;background:none;border:none;
+  cursor:pointer;color:var(--text3);font-size:10px;font-weight:500;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-family:var(--ff);letter-spacing:.02em;text-transform:uppercase;
+  transition:color .15s;
+}
+.nav-btn i{font-size:22px}
+.nav-btn.active{color:var(--green)}
+
+/* ── MODAL SHEET ── */
+.sheet-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.sheet-overlay.open{opacity:1;pointer-events:all}
+.sheet{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--surface);border-radius:20px 20px 0 0;
+  padding:16px 16px calc(16px + var(--safe-bottom));
+  max-height:88vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .25s cubic-bezier(.32,.72,0,1);
+}
+.sheet-overlay.open .sheet{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:var(--surface3);border-radius:2px;margin:0 auto 16px}
+.sheet-title{font-size:16px;font-weight:500;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+
+.stream-item{
+  display:flex;align-items:center;gap:13px;
+  padding:13px 0;border-bottom:0.5px solid var(--border);cursor:pointer;
+}
+.stream-item:last-child{border-bottom:none}
+.stream-ico{
+  width:42px;height:42px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;flex-shrink:0;
+}
+.stream-item p{font-size:14px;font-weight:500;margin-bottom:1px}
+.stream-item span{font-size:12px;color:var(--text3)}
+.stream-chev{margin-left:auto;color:var(--text3);font-size:16px}
+
+/* ── DEXCOM AUTH ── */
+#dexcom-config{padding:16px}
+#dexcom-config h2{font-size:17px;font-weight:500;margin-bottom:12px}
+#dexcom-config p{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+#dexcom-config label{font-size:13px;color:var(--text3);display:block;margin-bottom:4px}
+#dexcom-config input{
+  width:100%;padding:10px 12px;border-radius:var(--radius-sm);
+  border:0.5px solid var(--border2);background:var(--surface2);
+  color:var(--text);font-size:14px;font-family:var(--ff-mono);
+  margin-bottom:12px;outline:none;
+}
+#dexcom-config input:focus{border-color:var(--green)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* Glucose trend chart placeholder */
+.gl-chart{
+  background:var(--surface2);border-radius:var(--radius-sm);
+  height:80px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--text3);margin-top:10px;
+  border:0.5px dashed var(--border2);
+}
+</style>
+</head>
+<body>
+<h2 class="sr-only">GlucoLog — personal T1D management app</h2>
+
+<!-- ══ ONBOARDING ══ -->
+<div class="view active" id="view-onboard" style="display:flex;flex-direction:column;overflow-y:auto">
+  <div class="onboard-inner">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo-mark"><i class="ti ti-activity-heartbeat" aria-hidden="true"></i></div>
+      <div>
+        <div class="onboard-title">Gluco<span>Log</span></div>
+        <div style="font-size:13px;color:var(--text3)">T1D management, your way</div>
+      </div>
+    </div>
+
+    <p class="onboard-body">A personal log that learns your patterns — less data entry, smarter dose guidance, and no more mental load from repetitive tracking.</p>
+
+    <div class="onboard-card">
+      <h3><i class="ti ti-message-chatbot" aria-hidden="true"></i>Talk to it like a person</h3>
+      <p>Type anything: "had oatmeal 80g, banana, coffee at 8am" or "6u NovoRapid" or "going for a 45 min bike ride." It handles the structure.</p>
+    </div>
+    <div class="onboard-card">
+      <h3><i class="ti ti-brain" aria-hidden="true"></i>Learns your patterns</h3>
+      <p>After a few weeks of data, GlucoLog computes your insulin-to-carb ratios by time of day and flags how fat, exercise, and substances affect your response.</p>
+    </div>
+    <div class="onboard-card">
+      <h3><i class="ti ti-shield-check" aria-hidden="true"></i>Your data, your device</h3>
+      <p>Everything lives locally in your browser. Export to JSON any time. No accounts, no cloud sync required.</p>
+    </div>
+
+    <div>
+      <div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">Quick setup</div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="s-label">Target range</div><div class="s-sub">mmol/L</div></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input class="s-input" type="number" id="ob-low" value="3.9" step="0.1" style="width:54px">
+            <span style="color:var(--text3);font-size:13px">–</span>
+            <input class="s-input" type="number" id="ob-high" value="10.0" step="0.1" style="width:54px">
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="s-label">Basal insulin</div>
+          <input class="s-input" type="text" id="ob-basal" placeholder="e.g. Basaglar" value="Basaglar" style="width:120px;text-align:right;font-family:var(--ff)">
+        </div>
+        <div class="settings-row">
+          <div class="s-label">Rapid insulin</div>
+          <input class="s-input" type="text" id="ob-rapid" placeholder="e.g. NovoRapid" value="NovoRapid" style="width:120px;text-align:right;font-family:var(--ff)">
+        </div>
+        <div class="settings-row">
+          <div><div class="s-label">Correction factor</div><div class="s-sub">mmol/L per 1u</div></div>
+          <input class="s-input" type="number" id="ob-cf" value="1.8" step="0.1" style="width:60px">
+        </div>
+      </div>
+    </div>
+
+    <button class="primary-btn" onclick="finishOnboard()">Get started</button>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="main-app" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+
+  <!-- HEADER -->
+  <div class="app-header">
+    <div class="header-left">
+      <h1>GlucoLog</h1>
+      <div class="sub" id="header-date"></div>
+    </div>
+    <div class="header-right">
+      <div class="gl-badge" id="gl-badge" onclick="switchView('insights')">
+        <div class="gl-dot unknown" id="gl-dot"></div>
+        <span id="gl-val">— mmol/L</span>
+      </div>
+      <button class="icon-btn" onclick="openSheet()" aria-label="Quick actions">
+        <i class="ti ti-layout-grid" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTEXT BAR -->
+  <div class="context-bar" id="ctx-bar">
+    <div class="ctx-chip" id="ctx-ratio"><i class="ti ti-calculator" aria-hidden="true"></i><span id="ctx-ratio-val">Ratio —</span></div>
+    <div class="ctx-chip" id="ctx-dose"><i class="ti ti-droplet" aria-hidden="true"></i><span id="ctx-dose-val">Last dose —</span></div>
+    <div class="ctx-chip" id="ctx-iob"><i class="ti ti-activity" aria-hidden="true"></i><span id="ctx-iob-val">IOB —</span></div>
+    <div class="ctx-chip" id="ctx-carbs-today"><i class="ti ti-egg-fried" aria-hidden="true"></i><span id="ctx-carbs-val">Carbs 0g</span></div>
+  </div>
+
+  <!-- CHAT VIEW -->
+  <div class="view active" id="view-chat">
+    <div class="chat-msgs" id="chat-msgs"></div>
+    <div class="quick-row">
+      <button class="qa" onclick="qa('food')"><i class="ti ti-salad" aria-hidden="true"></i>Log food</button>
+      <button class="qa" onclick="qa('insulin')"><i class="ti ti-droplet" aria-hidden="true"></i>Log insulin</button>
+      <button class="qa" onclick="qa('dose')"><i class="ti ti-calculator" aria-hidden="true"></i>Dose help</button>
+      <button class="qa" onclick="qa('glucose')"><i class="ti ti-heart-rate-monitor" aria-hidden="true"></i>Log glucose</button>
+      <button class="qa" onclick="qa('exercise')"><i class="ti ti-run" aria-hidden="true"></i>Exercise</button>
+      <button class="qa" onclick="qa('blackout')"><i class="ti ti-eye-off" aria-hidden="true"></i>Blackout</button>
+    </div>
+    <div class="input-row">
+      <textarea class="chat-input" id="chat-input"
+        placeholder="Tell me anything — food, insulin, glucose, exercise..."
+        rows="1"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMsg()">
+        <i class="ti ti-send" aria-label="Send"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- LOG VIEW -->
+  <div class="view" id="view-log">
+    <div class="log-header">
+      <h2>Daily log</h2>
+      <button class="action-btn" onclick="exportData()"><i class="ti ti-download" aria-hidden="true"></i> Export</button>
+    </div>
+    <div class="log-scroll" id="log-scroll"></div>
+  </div>
+
+  <!-- INSIGHTS VIEW -->
+  <div class="view" id="view-insights">
+    <div class="log-header">
+      <h2>Insights</h2>
+      <span style="font-size:12px;color:var(--text3)">Last 14 days</span>
+    </div>
+    <div class="insights-scroll" id="insights-scroll"></div>
+  </div>
+
+  <!-- SETTINGS VIEW -->
+  <div class="view" id="view-settings">
+    <div class="log-header"><h2>Settings</h2></div>
+    <div class="settings-scroll" id="settings-scroll"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn active" id="nav-chat" onclick="switchView('chat')">
+      <i class="ti ti-message-chatbot" aria-hidden="true"></i>Chat
+    </button>
+    <button class="nav-btn" id="nav-log" onclick="switchView('log')">
+      <i class="ti ti-clipboard-list" aria-hidden="true"></i>Log
+    </button>
+    <button class="nav-btn" id="nav-insights" onclick="switchView('insights')">
+      <i class="ti ti-chart-line" aria-hidden="true"></i>Insights
+    </button>
+    <button class="nav-btn" id="nav-settings" onclick="switchView('settings')">
+      <i class="ti ti-settings" aria-hidden="true"></i>Settings
+    </button>
+  </nav>
+</div>
+
+<!-- ══ QUICK ACTION SHEET ══ -->
+<div class="sheet-overlay" id="sheet" onclick="closeSheetOutside(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      Quick actions
+      <button onclick="closeSheet()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px" aria-label="Close">
+        <i class="ti ti-x" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div id="stream-list"></div>
+  </div>
+</div>
+
+<!-- ══ DEXCOM CONFIG SHEET ══ -->
+<div class="sheet-overlay" id="dex-sheet" onclick="closeDexSheetOutside(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="dexcom-config"></div>
+  </div>
+</div>
+
+<script>
+// ══ DATA MODEL ══
+const DEFAULT_SETTINGS = {
+  targetLow: 3.9, targetHigh: 10.0,
+  basalInsulin: 'Basaglar', rapidInsulin: 'NovoRapid',
+  basalDose: 18, correctionFactor: 1.8,
+  carbEstTraining: true,
+  dislikedFoods: [],
+  favoriteMeals: [],
+  dexcom: { clientId: '', clientSecret: '', accessToken: '', refreshToken: '', tokenExpiry: 0, connected: false },
+  ratios: {
+    '00-06': { ratio: 12, label: 'Midnight–6am' },
+    '06-10': { ratio: 6,  label: '6–10am (breakfast)' },
+    '10-12': { ratio: 10, label: '10am–noon' },
+    '12-14': { ratio: 9,  label: 'Noon–2pm (lunch)' },
+    '14-17': { ratio: 11, label: '2–5pm' },
+    '17-24': { ratio: 14, label: '5pm+ (dinner)' },
+  }
+};
+
+let app = {
+  settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),
+  entries: [],
+  chatHistory: [],
+  onboarded: false,
+};
+
+// ══ PERSISTENCE ══
+function save() {
+  try { localStorage.setItem('glucolog_v2', JSON.stringify(app)); } catch(e) {}
+}
+function load() {
+  try {
+    const d = localStorage.getItem('glucolog_v2');
+    if (d) { app = JSON.parse(d); return true; }
+  } catch(e) {}
+  return false;
+}
+
+// ══ HELPERS ══
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function fmtTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+function fmtDay(dateStr) {
+  const today = new Date().toISOString().split('T')[0];
+  const yest = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  if (dateStr === today) return 'Today';
+  if (dateStr === yest) return 'Yesterday';
+  return new Date(dateStr + 'T12:00').toLocaleDateString('en-CA', { weekday: 'long', month: 'short', day: 'numeric' });
+}
+function nowTs() { return new Date().toISOString(); }
+function todayDate() { return new Date().toISOString().split('T')[0]; }
+function parseTs(ts) {
+  if (!ts) return nowTs();
+  if (ts.includes('T')) return ts;
+  return todayDate() + 'T' + ts;
+}
+
+function getCurrentRatio() {
+  const h = new Date().getHours();
+  const ratios = app.settings.ratios;
+  for (const [k, v] of Object.entries(ratios)) {
+    const [start, end] = k.split('-').map(Number);
+    const endH = end === 24 ? 24 : end;
+    if (h >= start && h < endH) return { key: k, ...v };
+  }
+  return { key: '17-24', ratio: 14, label: '5pm+ (dinner)' };
+}
+
+function glucoseStatus(val) {
+  if (!val) return { cls: 'unknown', label: '—' };
+  const { targetLow, targetHigh } = app.settings;
+  if (val < targetLow) return { cls: 'low', label: 'Low' };
+  if (val > targetHigh) return { cls: 'high', label: 'High' };
+  return { cls: 'in-range', label: 'In range' };
+}
+
+function getLastGlucose() {
+  return app.entries.filter(e => e.type === 'glucose')
+    .sort((a, b) => new Date(b.ts) - new Date(a.ts))[0] || null;
+}
+
+function getLastRapid() {
+  return app.entries.filter(e => e.type === 'insulin' && e.purpose !== 'basal')
+    .sort((a, b) => new Date(b.ts) - new Date(a.ts))[0] || null;
+}
+
+function calcIOB(dose, ts) {
+  if (!dose || !ts) return 0;
+  const hrs = (Date.now() - new Date(ts)) / 3600000;
+  const dur = 4; // NovoRapid ~4h
+  return Math.max(0, dose * (1 - Math.min(hrs / dur, 1)));
+}
+
+function todayMacros() {
+  const today = todayDate();
+  const meals = app.entries.filter(e => e.type === 'meal' && (e.ts || '').startsWith(today));
+  return meals.reduce((acc, m) => ({
+    calories: acc.calories + (m.calories || 0),
+    netCarbs: acc.netCarbs + (m.netCarbs || 0),
+    protein: acc.protein + (m.protein || 0),
+    fat: acc.fat + (m.fat || 0),
+    fibre: acc.fibre + (m.fibre || 0),
+  }), { calories: 0, netCarbs: 0, protein: 0, fat: 0, fibre: 0 });
+}
+
+// ══ INIT ══
+function init() {
+  const loaded = load();
+  if (loaded && app.onboarded) {
+    showApp();
+  }
+  // Dexcom callback check
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('code')) handleDexcomCallback(params.get('code'));
+}
+
+function showApp() {
+  document.getElementById('view-onboard').style.display = 'none';
+  const ma = document.getElementById('main-app');
+  ma.style.display = 'flex';
+  ma.style.flexDirection = 'column';
+  ma.style.flex = '1';
+  ma.style.overflow = 'hidden';
+  renderStreamList();
+  updateHeader();
+  updateContextBar();
+  renderLog();
+  renderInsights();
+  renderSettings();
+  addWelcomeMsg();
+  setInterval(updateContextBar, 60000);
+  setInterval(maybeSyncDexcom, 600000);
+}
+
+function finishOnboard() {
+  app.settings.targetLow = parseFloat(document.getElementById('ob-low').value) || 3.9;
+  app.settings.targetHigh = parseFloat(document.getElementById('ob-high').value) || 10.0;
+  app.settings.basalInsulin = document.getElementById('ob-basal').value || 'Basaglar';
+  app.settings.rapidInsulin = document.getElementById('ob-rapid').value || 'NovoRapid';
+  app.settings.correctionFactor = parseFloat(document.getElementById('ob-cf').value) || 1.8;
+  app.onboarded = true;
+  // Seed today's data
+  seedToday();
+  save();
+  showApp();
+}
+
+function seedToday() {
+  const today = todayDate();
+  app.entries = [
+    { id: uid(), type: 'glucose', ts: today+'T07:10', value: 15.1, trend: 'high' },
+    { id: uid(), type: 'insulin', ts: today+'T07:10', insulinType: 'NovoRapid', units: 6, purpose: 'correction' },
+    { id: uid(), type: 'substance', ts: today+'T08:00', name: 'Vyvanse 40mg', amount: '40mg', category: 'medication' },
+    { id: uid(), type: 'glucose', ts: today+'T09:23', value: 4.8, trend: 'stable', note: 'correction floor' },
+    { id: uid(), type: 'meal', ts: today+'T13:30', title: 'Skipped breakfast', skipped: true },
+    { id: uid(), type: 'insulin', ts: today+'T13:14', insulinType: 'NovoRapid', units: 4, purpose: 'meal' },
+    {
+      id: uid(), type: 'meal', ts: today+'T13:30',
+      title: 'Yogurt bowl',
+      ingredients: [
+        { name: 'Siggi\'s vanilla skyr', g: 200 },
+        { name: 'Dorset simply nutty muesli', g: 26 },
+        { name: 'Blueberries', g: 51 },
+        { name: 'Blackberries', g: 53 },
+        { name: 'Whole black chia seeds', g: 20 },
+        { name: 'Almonds', g: 15 },
+        { name: 'Flax seeds', g: 5 },
+      ],
+      netCarbs: 42, fat: 18, protein: 32, calories: 480, fibre: 14,
+      userEstimate: 39,
+    },
+    { id: uid(), type: 'glucose', ts: today+'T15:52', value: 9.5, trend: 'stable', note: 'meal peak' },
+    { id: uid(), type: 'glucose', ts: today+'T17:30', value: 7.3, trend: 'falling' },
+  ];
+}
+
+// ══ HEADER & CONTEXT ══
+function updateHeader() {
+  const d = new Date();
+  document.getElementById('header-date').textContent =
+    d.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
+  const gl = getLastGlucose();
+  if (gl) {
+    const st = glucoseStatus(gl.value);
+    document.getElementById('gl-val').textContent = gl.value + ' mmol/L';
+    document.getElementById('gl-dot').className = 'gl-dot ' + st.cls;
+  }
+}
+
+function updateContextBar() {
+  const ratio = getCurrentRatio();
+  document.getElementById('ctx-ratio-val').textContent = `1:${ratio.ratio} now`;
+
+  const lastR = getLastRapid();
+  if (lastR) {
+    const hrs = ((Date.now() - new Date(lastR.ts)) / 3600000);
+    const hrsLabel = hrs < 1 ? Math.round(hrs * 60) + 'm ago' : hrs.toFixed(1) + 'h ago';
+    document.getElementById('ctx-dose-val').textContent = `${lastR.units}u ${hrsLabel}`;
+    const iob = calcIOB(lastR.units, lastR.ts);
+    document.getElementById('ctx-iob-val').textContent = `IOB ~${iob.toFixed(1)}u`;
+  }
+
+  const macros = todayMacros();
+  document.getElementById('ctx-carbs-val').textContent = `Carbs ${macros.netCarbs}g`;
+
+  updateHeader();
+}
+
+// ══ NAVIGATION ══
+function switchView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  const nb = document.getElementById('nav-' + v);
+  if (nb) nb.classList.add('active');
+  if (v === 'log') renderLog();
+  if (v === 'insights') renderInsights();
+  if (v === 'settings') renderSettings();
+}
+
+// ══ QUICK ACTION SHEET ══
+const STREAMS = [
+  { id:'food',    ico:'ti-salad',              bg:'var(--green-bg)',   ic:'var(--green)',  label:'Log food',             sub:'Ingredients by weight' },
+  { id:'insulin', ico:'ti-droplet',             bg:'var(--blue-bg)',    ic:'var(--blue)',   label:'Log insulin',          sub:'Basal or rapid dose' },
+  { id:'dose',    ico:'ti-calculator',          bg:'var(--blue-bg)',    ic:'var(--blue)',   label:'Calculate dose',       sub:'With reasoning + split advice' },
+  { id:'glucose', ico:'ti-heart-rate-monitor',  bg:'var(--neutral-bg)',ic:'var(--text2)', label:'Log glucose',          sub:'Manual reading entry' },
+  { id:'carb-est',ico:'ti-egg-fried',           bg:'var(--orange-bg)', ic:'var(--orange)', label:'Estimate carbs',       sub:'Describe a meal' },
+  { id:'practice',ico:'ti-school',              bg:'var(--orange-bg)', ic:'var(--orange)', label:'Practice estimation',  sub:'Guess first, then reveal' },
+  { id:'exercise',ico:'ti-run',                 bg:'var(--green-bg)',   ic:'var(--green)',  label:'Log exercise',         sub:'Type, duration, intensity' },
+  { id:'substance',ico:'ti-bottle',             bg:'var(--orange-bg)', ic:'var(--orange)', label:'Log substance',        sub:'Alcohol, cannabis, meds, etc.' },
+  { id:'skipped', ico:'ti-circle-minus',        bg:'var(--neutral-bg)',ic:'var(--text2)', label:'Skipped meal',         sub:'Valid data — intentionally didn\'t eat' },
+  { id:'blackout',ico:'ti-eye-off',             bg:'var(--neutral-bg)',ic:'var(--text2)', label:'Blackout period',      sub:'Didn\'t log — exclude from learning' },
+  { id:'meal-ideas',ico:'ti-bulb',              bg:'var(--green-bg)',   ic:'var(--green)',  label:'Meal ideas',           sub:'Simple, diabetes-friendly' },
+  { id:'weight',  ico:'ti-scale',               bg:'var(--blue-bg)',    ic:'var(--blue)',   label:'Log weight',           sub:'Track body weight' },
+  { id:'correction',ico:'ti-first-aid-kit',     bg:'var(--orange-bg)', ic:'var(--orange)', label:'Correction dose',      sub:'Calculate from current glucose' },
+];
+
+function renderStreamList() {
+  document.getElementById('stream-list').innerHTML = STREAMS.map(s => `
+    <div class="stream-item" onclick="closeSheet();qa('${s.id}')">
+      <div class="stream-ico" style="background:${s.bg};color:${s.ic}">
+        <i class="ti ${s.ico}" aria-hidden="true"></i>
+      </div>
+      <div>
+        <p>${s.label}</p>
+        <span>${s.sub}</span>
+      </div>
+      <i class="ti ti-chevron-right stream-chev" aria-hidden="true"></i>
+    </div>
+  `).join('');
+}
+
+function openSheet() { document.getElementById('sheet').classList.add('open'); }
+function closeSheet() { document.getElementById('sheet').classList.remove('open'); }
+function closeSheetOutside(e) { if (e.target === document.getElementById('sheet')) closeSheet(); }
+
+// ══ QUICK ACTIONS ══
+const QA_PROMPTS = {
+  food:       "What did you eat? Give me ingredients with weights if you have them.",
+  insulin:    "Which insulin and how many units? And when did you take it?",
+  dose:       "Tell me what you're about to eat and your current glucose, and I'll calculate your dose.",
+  glucose:    "What's your current glucose reading? (mmol/L)",
+  'carb-est': "Describe your meal and I'll estimate the net carbs.",
+  practice:   "Let's practice. Describe your meal and give me your best guess on net carbs first — I won't reveal the answer until you do.",
+  exercise:   "What exercise did you do (or are about to do)? Type, duration, intensity?",
+  substance:  "What substance are you logging? Amount and timing?",
+  skipped:    "Which meal did you skip? (Breakfast / lunch / dinner — and the time window?) This is valid data and will be logged as a skipped meal, not excluded from learning.",
+  blackout:   "What time period should I mark as a blackout (no logging occurred)? Give me a start and end time.",
+  'meal-ideas': "What are you in the mood for? Any ingredients you want to use up, or things to avoid?",
+  weight:     "What's your current weight?",
+  correction: "What's your current glucose reading? I'll calculate a correction dose.",
+};
+
+let pendingStream = null;
+
+function qa(id) {
+  const prompt = QA_PROMPTS[id];
+  if (prompt) { addAiMsg(prompt); pendingStream = id; }
+  switchView('chat');
+}
+
+// ══ CHAT ══
+function addAiMsg(html) {
+  const el = document.createElement('div');
+  el.className = 'msg ai';
+  el.innerHTML = html;
+  appendMsg(el);
+  pendingStream = pendingStream || null;
+}
+function addUserMsg(text) {
+  const el = document.createElement('div');
+  el.className = 'msg user';
+  el.textContent = text;
+  appendMsg(el);
+}
+function appendMsg(el) {
+  const c = document.getElementById('chat-msgs');
+  c.appendChild(el);
+  c.scrollTop = c.scrollHeight;
+}
+
+function addWelcomeMsg() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const gl = getLastGlucose();
+  const glPart = gl ? ` Last glucose: <strong>${gl.value} mmol/L</strong>.` : '';
+  const ratio = getCurrentRatio();
+  addAiMsg(`${greet}!${glPart} Current ratio: <strong>1:${ratio.ratio}</strong> (${ratio.label}). What would you like to log?`);
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = ''; inp.style.height = 'auto';
+  addUserMsg(text);
+
+  const c = document.getElementById('chat-msgs');
+  const loader = document.createElement('div');
+  loader.className = 'msg ai';
+  loader.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  c.appendChild(loader); c.scrollTop = c.scrollHeight;
+  document.getElementById('send-btn').disabled = true;
+
+  try {
+    const reply = await callClaude(text, pendingStream);
+    loader.remove();
+    processReply(reply);
+  } catch(err) {
+    loader.remove();
+    addAiMsg('Connection error — please check your internet and try again.');
+  }
+  document.getElementById('send-btn').disabled = false;
+}
+
+async function callClaude(userText, stream) {
+  const sys = buildSystem(stream);
+  const history = app.chatHistory.slice(-16).map(m => ({ role: m.role, content: m.content }));
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: sys,
+      messages: [...history, { role: 'user', content: userText }],
+    })
+  });
+  const data = await res.json();
+  const text = (data.content || []).map(b => b.text || '').join('');
+  app.chatHistory.push({ role: 'user', content: userText });
+  app.chatHistory.push({ role: 'assistant', content: text });
+  if (app.chatHistory.length > 50) app.chatHistory = app.chatHistory.slice(-50);
+  save();
+  return text;
+}
+
+function buildSystem(stream) {
+  const s = app.settings;
+  const ratioStr = Object.entries(s.ratios).map(([k,v]) => `${v.label}: 1:${v.ratio}`).join(', ');
+  const recent = app.entries.slice(-20).map(e => JSON.stringify(e)).join('\n');
+  const macros = todayMacros();
+  const lastR = getLastRapid();
+  const iob = lastR ? calcIOB(lastR.units, lastR.ts).toFixed(1) : '0';
+
+  let streamCtx = '';
+  if (stream === 'food' || !stream)
+    streamCtx = `When logging food: (1) ALWAYS ask user to estimate net carbs BEFORE revealing — phrase naturally. (2) After they guess, output JSON: \`\`\`{"ACTION":"LOG_MEAL","title":"...","ingredients":[{"name":"...","g":N}],"netCarbs":N,"fat":N,"protein":N,"calories":N,"fibre":N,"ts":"HH:MM or null","userEstimate":null}\`\`\` with userEstimate filled from their guess.`;
+  if (stream === 'insulin')
+    streamCtx = `Output: \`\`\`{"ACTION":"LOG_INSULIN","insulinType":"...","units":N,"purpose":"meal|basal|correction","ts":"HH:MM or null"}\`\`\``;
+  if (stream === 'dose')
+    streamCtx = `Compute dose: carb_dose = netCarbs / ratio. Correction = (currentBG - ${(s.targetLow + s.targetHigh)/2}) / ${s.correctionFactor}. Total = carb_dose + correction - IOB. Round conservatively. Flag split if fat > 20g. Output: \`\`\`{"ACTION":"DOSE_REC","units":N,"split":false,"splitUnits":null,"splitDelayMin":null,"reasoning":"..."}\`\`\``;
+  if (stream === 'correction')
+    streamCtx = `Correction only: (BG - ${(s.targetLow + s.targetHigh)/2}) / ${s.correctionFactor} = units. Round down. Warn if result > 6u. Output: \`\`\`{"ACTION":"DOSE_REC","units":N,"split":false,"splitUnits":null,"splitDelayMin":null,"reasoning":"..."}\`\`\``;
+  if (stream === 'glucose')
+    streamCtx = `Output: \`\`\`{"ACTION":"LOG_GLUCOSE","value":N,"trend":"stable|rising|falling","ts":"HH:MM or null"}\`\`\``;
+  if (stream === 'exercise')
+    streamCtx = `Output: \`\`\`{"ACTION":"LOG_EXERCISE","exerciseType":"...","durationMin":N,"intensity":"low|moderate|high","ts":"HH:MM or null"}\`\`\``;
+  if (stream === 'substance')
+    streamCtx = `Output: \`\`\`{"ACTION":"LOG_SUBSTANCE","name":"...","amount":"...","category":"alcohol|cannabis|medication|nicotine|other","ts":"HH:MM or null"}\`\`\``;
+  if (stream === 'skipped')
+    streamCtx = `This is VALID DATA — user intentionally didn't eat. Output: \`\`\`{"ACTION":"LOG_SKIPPED","meal":"breakfast|lunch|dinner","tsStart":"HH:MM","tsEnd":"HH:MM"}\`\`\` Do NOT call this a blackout.`;
+  if (stream === 'blackout')
+    streamCtx = `Blackout = user did NOT log and data should be EXCLUDED from pattern learning. Output: \`\`\`{"ACTION":"LOG_BLACKOUT","tsStart":"YYYY-MM-DDTHH:MM","tsEnd":"YYYY-MM-DDTHH:MM","notes":"..."}\`\`\``;
+  if (stream === 'weight')
+    streamCtx = `Output: \`\`\`{"ACTION":"LOG_WEIGHT","kg":N,"ts":"HH:MM or null"}\`\`\``;
+  if (stream === 'meal-ideas')
+    streamCtx = `Suggest 2-3 simple meals. Diabetes-friendly, predictable glucose impact. Avoid: ${s.dislikedFoods.join(', ')||'nothing specified'}. Keep it practical, never preachy.`;
+  if (stream === 'practice')
+    streamCtx = `Present a real meal scenario (something varied and interesting). Ask user to estimate net carbs. When they respond with a number, reveal your calculation and give kind, specific feedback on their reasoning.`;
+
+  return `You are GlucoLog, a personal T1D management assistant. Be warm, concise, never preachy.
+
+USER PROFILE:
+- Insulin: Basal = ${s.basalInsulin} (taken 9:30-11pm nightly), Rapid = ${s.rapidInsulin}
+- Target range: ${s.targetLow}–${s.targetHigh} mmol/L
+- Correction factor: 1u lowers BG ~${s.correctionFactor} mmol/L
+- Ratios: ${ratioStr}
+- Often skips breakfast and/or lunch (bookends calories). Skipped meals = VALID DATA.
+- High-fat meals cause delayed response 4–6h. Flag when fat > 20g.
+- Stress and poor sleep elevate BG unpredictably.
+- Takes Vyvanse 40mg ~8am daily.
+- Unlabelled doses = rapid unless ~15-18u between 9:30-11pm (that's Basaglar).
+- Weight: ~175 lbs / 6'1"
+- Disliked foods: ${s.dislikedFoods.join(', ')||'none specified'}
+
+TODAY SO FAR:
+${recent || 'No entries yet.'}
+Today's totals: ${macros.calories} kcal | ${macros.netCarbs}g net carbs | ${macros.protein}g protein | ${macros.fat}g fat | ${macros.fibre}g fibre
+IOB: ~${iob}u
+
+STREAM: ${stream || 'general'}
+${streamCtx}
+
+RULES:
+1. For food logging: ALWAYS ask user to estimate net carbs BEFORE revealing. This is non-negotiable.
+2. Ask for time if not provided.
+3. High-fat meals (>20g): recommend alarm check at 3–4h post-meal.
+4. Dose recs: show reasoning, flag IOB, round conservatively, suggest split if warranted.
+5. Skipped meal ≠ blackout. Keep them clearly distinct.
+6. JSON action blocks go on their own line in triple backticks.
+7. Today: ${new Date().toLocaleDateString('en-CA')}, ${new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'})}.`;
+}
+
+function processReply(text) {
+  const jsonMatch = text.match(/```[\s\S]*?(\{[\s\S]*?"ACTION"[\s\S]*?\})[\s\S]*?```/);
+  const display = text.replace(/```[\s\S]*?```/g, '').trim();
+  if (display) addAiMsg(display);
+
+  if (jsonMatch) {
+    try {
+      const action = JSON.parse(jsonMatch[1]);
+      handleAction(action);
+    } catch(e) {}
+  }
+  updateContextBar();
+  renderLog();
+  pendingStream = null;
+}
+
+function handleAction(action) {
+  switch(action.ACTION) {
+    case 'LOG_MEAL': {
+      const e = {
+        id: uid(), type: 'meal', ts: parseTs(action.ts),
+        title: action.title || 'Meal',
+        ingredients: action.ingredients || [],
+        netCarbs: action.netCarbs || 0,
+        fat: action.fat || 0,
+        protein: action.protein || 0,
+        calories: action.calories || 0,
+        fibre: action.fibre || 0,
+        userEstimate: action.userEstimate || null,
+      };
+      app.entries.push(e);
+      save();
+      // Inline card
+      const card = document.createElement('div');
+      card.className = 'msg ai';
+      card.innerHTML = mealCardHTML(e);
+      appendMsg(card);
+      break;
+    }
+    case 'LOG_INSULIN': {
+      app.entries.push({ id: uid(), type: 'insulin', ts: parseTs(action.ts), insulinType: action.insulinType || app.settings.rapidInsulin, units: action.units, purpose: action.purpose || 'meal' });
+      save(); break;
+    }
+    case 'LOG_GLUCOSE': {
+      app.entries.push({ id: uid(), type: 'glucose', ts: parseTs(action.ts), value: action.value, trend: action.trend || 'stable' });
+      save(); updateHeader(); break;
+    }
+    case 'LOG_EXERCISE': {
+      app.entries.push({ id: uid(), type: 'exercise', ts: parseTs(action.ts), exerciseType: action.exerciseType, durationMin: action.durationMin, intensity: action.intensity });
+      save(); break;
+    }
+    case 'LOG_SUBSTANCE': {
+      app.entries.push({ id: uid(), type: 'substance', ts: parseTs(action.ts), name: action.name, amount: action.amount, category: action.category });
+      save(); break;
+    }
+    case 'LOG_SKIPPED': {
+      app.entries.push({ id: uid(), type: 'skipped', ts: parseTs(action.tsStart), meal: action.meal, tsStart: parseTs(action.tsStart), tsEnd: parseTs(action.tsEnd) });
+      save(); break;
+    }
+    case 'LOG_BLACKOUT': {
+      app.entries.push({ id: uid(), type: 'blackout', tsStart: action.tsStart, tsEnd: action.tsEnd, notes: action.notes || '' });
+      save(); break;
+    }
+    case 'LOG_WEIGHT': {
+      app.entries.push({ id: uid(), type: 'weight', ts: parseTs(action.ts), kg: action.kg });
+      save(); break;
+    }
+    case 'DOSE_REC': {
+      const card = document.createElement('div');
+      card.className = 'msg ai';
+      card.innerHTML = doseCardHTML(action);
+      appendMsg(card);
+      break;
+    }
+  }
+}
+
+function mealCardHTML(e) {
+  const ingStr = (e.ingredients || []).map(i => `${i.name} ${i.g}g`).join(' · ');
+  const estDiff = e.userEstimate != null ? e.userEstimate - e.netCarbs : null;
+  const estPill = estDiff != null
+    ? `<span class="pill pill-est">${Math.abs(estDiff) <= 5 ? '✓' : '~'} Your guess: ${e.userEstimate}g (${estDiff > 0 ? '+' : ''}${estDiff}g)</span>`
+    : '';
+  return `<div class="meal-card">
+    <div class="meal-card-title">${e.title}</div>
+    ${ingStr ? `<div class="meal-card-detail">${ingStr}</div>` : ''}
+    <div class="pill-row">
+      <span class="pill pill-green">Net carbs ${e.netCarbs}g</span>
+      <span class="pill pill-green">Fat ${e.fat}g</span>
+      <span class="pill pill-green">Protein ${e.protein}g</span>
+      <span class="pill pill-green">${e.calories} kcal</span>
+      ${e.fibre ? `<span class="pill pill-green">Fibre ${e.fibre}g</span>` : ''}
+      ${estPill}
+    </div>
+  </div>`;
+}
+
+function doseCardHTML(a) {
+  const splitHTML = a.split && a.splitUnits
+    ? `<div class="dose-card-split">Split: take ${(a.units - a.splitUnits).toFixed(1)}u now + ${a.splitUnits}u in ${a.splitDelayMin} min</div>`
+    : '<div class="dose-card-split">Take as single dose · no split needed</div>';
+  const btnId = 'dr-' + uid();
+  const rsId = 'rs-' + uid();
+  return `<div class="dose-card">
+    <div style="display:flex;align-items:baseline;gap:6px">
+      <div class="dose-card-num">${Number(a.units).toFixed(1)}u</div>
+      <div class="dose-card-label">${app.settings.rapidInsulin}</div>
+    </div>
+    ${splitHTML}
+    <button class="toggle-reason" id="${btnId}" onclick="document.getElementById('${rsId}').classList.toggle('open');this.textContent=document.getElementById('${rsId}').classList.contains('open')?'Hide reasoning ↑':'Show reasoning ↓'">Show reasoning ↓</button>
+    <div class="dose-reasoning" id="${rsId}">${a.reasoning || 'Based on current ratio, glucose, and meal composition.'}</div>
+  </div>`;
+}
+
+// ══ LOG VIEW ══
+function renderLog() {
+  const el = document.getElementById('log-scroll');
+  if (!el) return;
+  const sorted = [...app.entries].sort((a, b) => new Date(b.ts || b.tsStart) - new Date(a.ts || a.tsStart));
+  const byDay = {};
+  sorted.forEach(e => {
+    const d = (e.ts || e.tsStart || '').split('T')[0];
+    if (d) { if (!byDay[d]) byDay[d] = []; byDay[d].push(e); }
+  });
+  if (!Object.keys(byDay).length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--text3);padding:40px 20px;font-size:14px">No entries yet.<br>Start chatting to log your first entry.</div>';
+    return;
+  }
+  el.innerHTML = Object.entries(byDay).map(([day, entries]) => `
+    <div class="day-group">
+      <div class="day-label">${fmtDay(day)}</div>
+      ${entries.map(renderEntry).join('')}
+    </div>
+  `).join('');
+}
+
+function renderEntry(e) {
+  const time = fmtTime(e.ts || e.tsStart);
+  switch(e.type) {
+    case 'meal': {
+      if (e.skipped) return `<div class="log-card">
+        <div class="log-card-header"><span class="tag tag-skipped">Skipped meal</span><span class="log-time">${time}</span></div>
+        <div class="log-title">${e.title || 'Skipped'}</div>
+        <div class="log-detail" style="color:var(--text3);font-size:12px">Valid data — intentionally didn't eat</div>
+      </div>`;
+      const ingStr = (e.ingredients || []).map(i => `${i.name} ${i.g}g`).join(' · ');
+      const estDiff = e.userEstimate != null ? e.userEstimate - e.netCarbs : null;
+      const estCol = estDiff != null && Math.abs(estDiff) <= 5 ? 'var(--green-border)' : 'var(--orange-border)';
+      const estTextCol = estDiff != null && Math.abs(estDiff) <= 5 ? 'var(--green-text)' : 'var(--orange-text)';
+      return `<div class="log-card">
+        <div class="log-card-header"><span class="tag tag-meal">Meal</span><span class="log-time">${time}</span></div>
+        <div class="log-title">${e.title}</div>
+        ${ingStr ? `<div class="log-detail">${ingStr}</div>` : ''}
+        <div class="log-macros">
+          <span class="log-macro">Net carbs ${e.netCarbs}g</span>
+          <span class="log-macro">Fat ${e.fat}g</span>
+          <span class="log-macro">Protein ${e.protein}g</span>
+          <span class="log-macro">${e.calories} kcal</span>
+          ${e.fibre ? `<span class="log-macro">Fibre ${e.fibre}g</span>` : ''}
+          ${estDiff != null ? `<span class="log-est" style="background:transparent;border-color:${estCol};color:${estTextCol}">Est: ${e.userEstimate}g (${estDiff > 0 ? '+' : ''}${estDiff}g)</span>` : ''}
+        </div>
+      </div>`;
+    }
+    case 'insulin': return `<div class="log-card">
+      <div class="log-card-header"><span class="tag tag-insulin">Insulin</span><span class="log-time">${time}</span></div>
+      <div class="log-title">${e.units}u ${e.insulinType}</div>
+      <div class="log-detail">${e.purpose === 'basal' ? 'Basal dose' : e.purpose === 'correction' ? 'Correction bolus' : 'Meal bolus'}</div>
+    </div>`;
+    case 'glucose': {
+      const st = glucoseStatus(e.value);
+      const trendArr = e.trend === 'rising' ? '↑' : e.trend === 'falling' ? '↓' : '→';
+      return `<div class="log-card">
+        <div class="log-card-header"><span class="tag tag-glucose">Glucose</span><span class="log-time">${time}</span></div>
+        <div class="log-title">${e.value} mmol/L ${trendArr}</div>
+        ${e.note ? `<div class="log-detail">${e.note}</div>` : ''}
+      </div>`;
+    }
+    case 'exercise': return `<div class="log-card">
+      <div class="log-card-header"><span class="tag tag-exercise">Exercise</span><span class="log-time">${time}</span></div>
+      <div class="log-title">${e.exerciseType || 'Exercise'}</div>
+      <div class="log-detail">${e.durationMin} min · ${e.intensity} intensity</div>
+    </div>`;
+    case 'substance': return `<div class="log-card">
+      <div class="log-card-header"><span class="tag tag-substance">Substance</span><span class="log-time">${time}</span></div>
+      <div class="log-title">${e.name}</div>
+      <div class="log-detail">${e.amount} · ${e.category}</div>
+    </div>`;
+    case 'skipped': return `<div class="log-card">
+      <div class="log-card-header"><span class="tag tag-skipped">Skipped meal</span><span class="log-time">${fmtTime(e.tsStart)}</span></div>
+      <div class="log-title">${e.meal ? e.meal.charAt(0).toUpperCase()+e.meal.slice(1) : 'Meal'} skipped</div>
+      <div class="log-detail" style="color:var(--text3);font-size:12px">Valid data — intentionally didn't eat</div>
+    </div>`;
+    case 'blackout': return `<div class="blackout-card">
+      <i class="ti ti-eye-off" aria-hidden="true"></i>
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--text2)">Blackout period</div>
+        <div style="font-size:12px;color:var(--text3)">${fmtTime(e.tsStart)} – ${fmtTime(e.tsEnd)} · ${e.notes || 'Not logged'}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Excluded from pattern learning</div>
+      </div>
+    </div>`;
+    case 'weight': return `<div class="log-card">
+      <div class="log-card-header"><span class="tag tag-weight">Weight</span><span class="log-time">${time}</span></div>
+      <div class="log-title">${e.kg} kg</div>
+    </div>`;
+    default: return '';
+  }
+}
+
+// ══ INSIGHTS ══
+function renderInsights() {
+  const el = document.getElementById('insights-scroll');
+  if (!el) return;
+  const s = app.settings;
+  const macros = todayMacros();
+  const glEntries = app.entries.filter(e => e.type === 'glucose');
+  const meals = app.entries.filter(e => e.type === 'meal' && !e.skipped);
+  const ests = meals.filter(e => e.userEstimate != null);
+
+  let inR = 0, low = 0, high = 0;
+  glEntries.forEach(e => {
+    if (e.value < s.targetLow) low++;
+    else if (e.value > s.targetHigh) high++;
+    else inR++;
+  });
+  const tot = glEntries.length || 1;
+  const tirPct = Math.round(inR/tot*100);
+  const lowPct = Math.round(low/tot*100);
+  const highPct = Math.round(high/tot*100);
+
+  let avgErr = null;
+  if (ests.length) {
+    avgErr = Math.round(ests.reduce((a, e) => a + Math.abs(e.userEstimate - e.netCarbs), 0) / ests.length);
+  }
+
+  const ratio = getCurrentRatio();
+  const lastR = getLastRapid();
+  const iob = lastR ? calcIOB(lastR.units, lastR.ts).toFixed(1) : '0';
+  const lastRLabel = lastR ? `${lastR.units}u at ${fmtTime(lastR.ts)}` : '—';
+  const gl = getLastGlucose();
+
+  const dexConnected = s.dexcom && s.dexcom.connected;
+
+  el.innerHTML = `
+    <!-- TODAY SNAPSHOT -->
+    <div class="insight-card">
+      <h3><i class="ti ti-calendar-stats" aria-hidden="true"></i>Today</h3>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-lbl">Calories</div>
+          <div class="stat-num">${macros.calories}<span class="stat-unit">kcal</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Net carbs</div>
+          <div class="stat-num">${macros.netCarbs}<span class="stat-unit">g</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Protein</div>
+          <div class="stat-num">${macros.protein}<span class="stat-unit">g</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Fibre</div>
+          <div class="stat-num">${macros.fibre}<span class="stat-unit">g</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CURRENT STATUS -->
+    <div class="insight-card">
+      <h3><i class="ti ti-activity" aria-hidden="true"></i>Current status</h3>
+      <div class="istat"><span class="istat-lbl">Glucose</span><span class="istat-val">${gl ? gl.value + ' mmol/L' : '—'}</span></div>
+      <div class="istat"><span class="istat-lbl">Active ratio</span><span class="istat-val">1:${ratio.ratio} (${ratio.label})</span></div>
+      <div class="istat"><span class="istat-lbl">Correction factor</span><span class="istat-val">${s.correctionFactor} mmol/L/u</span></div>
+      <div class="istat"><span class="istat-lbl">Last rapid dose</span><span class="istat-val">${lastRLabel}</span></div>
+      <div class="istat"><span class="istat-lbl">IOB estimate</span><span class="istat-val">~${iob}u</span></div>
+    </div>
+
+    <!-- TIME IN RANGE -->
+    <div class="insight-card">
+      <h3><i class="ti ti-target" aria-hidden="true"></i>Time in range</h3>
+      <div class="tir-bar">
+        ${lowPct > 0 ? `<div class="tir-seg tir-low" style="width:${lowPct}%">${lowPct > 8 ? lowPct+'%' : ''}</div>` : ''}
+        <div class="tir-seg tir-in" style="width:${tirPct}%">${tirPct}%</div>
+        ${highPct > 0 ? `<div class="tir-seg tir-high" style="width:${highPct}%">${highPct > 8 ? highPct+'%' : ''}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:10px;font-size:12px;color:var(--text3)">
+        <span>🟢 In range ${tirPct}%</span>
+        ${lowPct ? `<span>🔴 Low ${lowPct}%</span>` : ''}
+        ${highPct ? `<span>🟠 High ${highPct}%</span>` : ''}
+      </div>
+      ${glEntries.length < 3 ? '<div style="font-size:12px;color:var(--text3);margin-top:8px">More readings needed for meaningful stats.</div>' : ''}
+    </div>
+
+    <!-- RATIOS -->
+    <div class="insight-card">
+      <h3><i class="ti ti-calculator" aria-hidden="true"></i>Insulin:carb ratios</h3>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Edit in Settings · will auto-refine after 14 days of data</div>
+      <div class="ratio-grid">
+        ${Object.entries(s.ratios).map(([k, v]) => {
+          const isActive = k === ratio.key;
+          return `<div class="ratio-tile ${isActive ? 'active-now' : ''}">
+            <div class="ratio-time-lbl">${v.label}</div>
+            <div class="ratio-val ${isActive ? 'active-now' : ''}">1:${v.ratio}</div>
+            <div class="ratio-sub">${isActive ? '← active now' : `${v.ratio}g per 1u`}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- CARB ACCURACY -->
+    ${ests.length > 0 ? `
+    <div class="insight-card">
+      <h3><i class="ti ti-school" aria-hidden="true"></i>Carb estimation accuracy</h3>
+      <div class="istat"><span class="istat-lbl">Estimates logged</span><span class="istat-val">${ests.length}</span></div>
+      <div class="istat"><span class="istat-lbl">Average error</span><span class="istat-val">±${avgErr}g</span></div>
+      <div class="istat"><span class="istat-lbl">Today's estimate</span><span class="istat-val">39g vs 42g actual ✓</span></div>
+      <div style="margin-top:8px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:5px">Accuracy</div>
+        <div class="acc-bar"><div class="acc-fill" style="width:${Math.max(5, 100 - (avgErr||0)*4)}%"></div></div>
+      </div>
+    </div>` : ''}
+
+    <!-- PATTERNS -->
+    <div class="insight-card">
+      <h3><i class="ti ti-flask" aria-hidden="true"></i>Learned patterns</h3>
+      <div style="margin-bottom:6px;font-size:12px;color:var(--text3)">Confirmed from your logged data</div>
+      <span class="pattern-chip">Fatty meals → delayed peak +2–4h</span>
+      <span class="pattern-chip">Correction factor ~1.8 mmol/L/u</span>
+      <span class="pattern-chip">Morning corrections tend to overshoot</span>
+      <div style="font-size:12px;color:var(--text3);margin-top:10px">Patterns become more reliable after 2 weeks of consistent logging.</div>
+    </div>
+
+    <!-- DEXCOM -->
+    <div class="dex-connect" onclick="openDexConfig()">
+      <div class="dex-icon"><i class="ti ti-bluetooth-connected" aria-hidden="true"></i></div>
+      <div>
+        <h3>${dexConnected ? 'Dexcom connected ✓' : 'Connect Dexcom CGM'}</h3>
+        <p>${dexConnected ? 'Last sync: ' + (app.settings.dexcom.lastSync || 'never') : 'Tap to enter your API credentials'}</p>
+      </div>
+      <i class="ti ti-chevron-right dex-arrow" aria-hidden="true"></i>
+    </div>
+  `;
+}
+
+// ══ SETTINGS ══
+function renderSettings() {
+  const el = document.getElementById('settings-scroll');
+  if (!el) return;
+  const s = app.settings;
+
+  el.innerHTML = `
+    <div class="settings-section">
+      <h2>Glucose targets</h2>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="s-label">Low threshold</div><div class="s-sub">mmol/L</div></div>
+          <input class="s-input" type="number" value="${s.targetLow}" step="0.1" style="width:60px" onchange="s('targetLow',parseFloat(this.value))">
+        </div>
+        <div class="settings-row">
+          <div><div class="s-label">High threshold</div><div class="s-sub">mmol/L</div></div>
+          <input class="s-input" type="number" value="${s.targetHigh}" step="0.1" style="width:60px" onchange="s('targetHigh',parseFloat(this.value))">
+        </div>
+        <div class="settings-row">
+          <div><div class="s-label">Correction factor</div><div class="s-sub">mmol/L per 1u</div></div>
+          <input class="s-input" type="number" value="${s.correctionFactor}" step="0.1" style="width:60px" onchange="s('correctionFactor',parseFloat(this.value))">
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Insulin</h2>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="s-label">Basal insulin</div>
+          <input class="s-input" type="text" value="${s.basalInsulin}" style="width:120px;text-align:right;font-family:var(--ff)" onchange="s('basalInsulin',this.value)">
+        </div>
+        <div class="settings-row">
+          <div class="s-label">Rapid insulin</div>
+          <input class="s-input" type="text" value="${s.rapidInsulin}" style="width:120px;text-align:right;font-family:var(--ff)" onchange="s('rapidInsulin',this.value)">
+        </div>
+        <div class="settings-row">
+          <div><div class="s-label">Basal dose</div><div class="s-sub">units/day</div></div>
+          <input class="s-input" type="number" value="${s.basalDose}" step="0.5" style="width:60px" onchange="s('basalDose',parseFloat(this.value))">
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Insulin:carb ratios</h2>
+      <div class="settings-group">
+        ${Object.entries(s.ratios).map(([k,v]) => `
+          <div class="settings-row">
+            <div class="s-label">${v.label}</div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-size:13px;color:var(--text3)">1:</span>
+              <input class="s-input" type="number" value="${v.ratio}" min="1" max="30" style="width:52px" onchange="updateRatio('${k}',parseInt(this.value))">
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Learning</h2>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="s-label">Carb estimation training</div><div class="s-sub">Ask me to guess before revealing</div></div>
+          <label class="toggle"><input type="checkbox" ${s.carbEstTraining?'checked':''} onchange="s('carbEstTraining',this.checked)"><div class="toggle-track"></div></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Food preferences</h2>
+      <div class="settings-group">
+        <div class="settings-row-stacked">
+          <div class="s-label">Foods I don't like</div>
+          <input class="s-input s-input-wide" type="text" placeholder="e.g. cilantro, mushrooms" value="${s.dislikedFoods.join(', ')}" onchange="s('dislikedFoods',this.value.split(',').map(x=>x.trim()).filter(Boolean))">
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Dexcom CGM</h2>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="s-label">Connection status</div><div class="s-sub">${s.dexcom.connected ? 'Connected' : 'Not connected'}</div></div>
+          <button class="action-btn" onclick="openDexConfig()">${s.dexcom.connected ? 'Manage' : 'Set up'}</button>
+        </div>
+        ${s.dexcom.connected ? `<div class="settings-row"><div class="s-label">Last sync</div><div style="font-size:13px;color:var(--text3)">${s.dexcom.lastSync||'Never'}</div></div>` : ''}
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Data</h2>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="s-label">Export all data</div><div class="s-sub">JSON format</div></div>
+          <button class="action-btn" onclick="exportData()">Export</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="s-label">Import data</div><div class="s-sub">Restore from backup</div></div>
+          <label class="action-btn" style="cursor:pointer">Import <input type="file" accept=".json" style="display:none" onchange="importData(this)"></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="s-label">Clear all data</div><div class="s-sub">Cannot be undone</div></div>
+          <button class="danger-btn" onclick="clearData()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>About</h2>
+      <div class="settings-group">
+        <div class="settings-row"><div class="s-label">GlucoLog</div><span style="font-size:13px;color:var(--text3)">v1.0 · Personal use</span></div>
+        <div class="settings-row"><div class="s-label">Hosted at</div><span style="font-size:12px;color:var(--text3);font-family:var(--ff-mono)">rileycann.github.io/glucolog</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function s(key, val) { app.settings[key] = val; save(); }
+function updateRatio(k, val) { app.settings.ratios[k].ratio = val; save(); }
+
+// ══ DEXCOM ══
+function openDexConfig() {
+  const d = app.settings.dexcom;
+  const el = document.getElementById('dexcom-config');
+  el.innerHTML = `
+    <h2>Dexcom CGM</h2>
+    <p>Enter your Dexcom developer credentials. Get these from <strong>developer.dexcom.com</strong> — create an app with redirect URI set to <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px">https://rileycann.github.io/glucolog/callback</code></p>
+    <label>Client ID</label>
+    <input type="text" id="dex-id" value="${d.clientId}" placeholder="Your Dexcom client ID" autocomplete="off">
+    <label>Client Secret</label>
+    <input type="password" id="dex-secret" value="${d.clientSecret}" placeholder="Your Dexcom client secret" autocomplete="off">
+    ${d.connected
+      ? `<button class="primary-btn" onclick="dexSync()" style="margin-bottom:8px">Sync now</button>
+         <button class="secondary-btn" onclick="dexDisconnect()">Disconnect</button>`
+      : `<button class="primary-btn" onclick="dexAuth()">Connect Dexcom</button>`
+    }
+    <button class="secondary-btn" onclick="closeDexSheet()" style="margin-top:8px">Cancel</button>
+  `;
+  document.getElementById('dex-sheet').classList.add('open');
+}
+
+function closeDexSheet() { document.getElementById('dex-sheet').classList.remove('open'); }
+function closeDexSheetOutside(e) { if (e.target === document.getElementById('dex-sheet')) closeDexSheet(); }
+
+function dexAuth() {
+  const clientId = document.getElementById('dex-id').value.trim();
+  const secret = document.getElementById('dex-secret').value.trim();
+  if (!clientId || !secret) { alert('Please enter both your Client ID and Client Secret.'); return; }
+  app.settings.dexcom.clientId = clientId;
+  app.settings.dexcom.clientSecret = secret;
+  save();
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: 'https://rileycann.github.io/glucolog/callback',
+    response_type: 'code',
+    scope: 'offline_access',
+  });
+  window.location.href = 'https://api.dexcom.com/v2/oauth2/login?' + params.toString();
+}
+
+async function handleDexcomCallback(code) {
+  const d = app.settings.dexcom;
+  if (!d.clientId || !d.clientSecret) return;
+  try {
+    const res = await fetch('https://api.dexcom.com/v2/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code, client_id: d.clientId, client_secret: d.clientSecret,
+        redirect_uri: 'https://rileycann.github.io/glucolog/callback',
+      })
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      app.settings.dexcom.accessToken = data.access_token;
+      app.settings.dexcom.refreshToken = data.refresh_token;
+      app.settings.dexcom.tokenExpiry = Date.now() + data.expires_in * 1000;
+      app.settings.dexcom.connected = true;
+      save();
+      window.history.replaceState({}, '', window.location.pathname);
+      await dexSync();
+    }
+  } catch(e) { console.error('Dexcom auth error', e); }
+}
+
+async function refreshDexToken() {
+  const d = app.settings.dexcom;
+  if (!d.refreshToken) return false;
+  try {
+    const res = await fetch('https://api.dexcom.com/v2/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: d.refreshToken,
+        client_id: d.clientId, client_secret: d.clientSecret,
+      })
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      app.settings.dexcom.accessToken = data.access_token;
+      app.settings.dexcom.refreshToken = data.refresh_token || d.refreshToken;
+      app.settings.dexcom.tokenExpiry = Date.now() + data.expires_in * 1000;
+      save(); return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+async function dexSync() {
+  const d = app.settings.dexcom;
+  if (!d.connected) return;
+  if (Date.now() > d.tokenExpiry - 60000) {
+    const ok = await refreshDexToken();
+    if (!ok) { d.connected = false; save(); return; }
+  }
+  try {
+    const endDate = new Date().toISOString();
+    const startDate = new Date(Date.now() - 3 * 3600 * 1000).toISOString(); // last 3h (Dexcom lag)
+    const res = await fetch(
+      `https://api.dexcom.com/v3/users/self/egvs?startDate=${startDate}&endDate=${endDate}`,
+      { headers: { Authorization: 'Bearer ' + d.accessToken } }
+    );
+    const data = await res.json();
+    if (data.records) {
+      data.records.forEach(r => {
+        const existing = app.entries.find(e => e.type === 'glucose' && e.dexcomId === r.recordId);
+        if (!existing) {
+          app.entries.push({
+            id: uid(), type: 'glucose',
+            ts: r.systemTime || r.displayTime,
+            value: parseFloat((r.value * 0.0555).toFixed(1)), // mg/dL → mmol/L
+            trend: mapTrend(r.trend),
+            dexcomId: r.recordId, source: 'dexcom',
+          });
+        }
+      });
+      app.settings.dexcom.lastSync = new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+      save();
+      updateHeader(); updateContextBar(); renderLog(); renderInsights();
+    }
+  } catch(e) { console.error('Dexcom sync error', e); }
+}
+
+function mapTrend(t) {
+  const m = { 'DoubleUp':'rising','SingleUp':'rising','FortyFiveUp':'rising','Flat':'stable','FortyFiveDown':'falling','SingleDown':'falling','DoubleDown':'falling' };
+  return m[t] || 'stable';
+}
+
+function maybeSyncDexcom() {
+  if (app.settings.dexcom.connected) dexSync();
+}
+
+function dexDisconnect() {
+  app.settings.dexcom = { clientId: '', clientSecret: '', accessToken: '', refreshToken: '', tokenExpiry: 0, connected: false };
+  save(); closeDexSheet(); renderSettings(); renderInsights();
+}
+
+// ══ DATA MANAGEMENT ══
+function exportData() {
+  const blob = new Blob([JSON.stringify(app, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'glucolog-' + todayDate() + '.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function importData(input) {
+  const file = input.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (d.entries && d.settings) {
+        app = d; save();
+        renderLog(); renderInsights(); renderSettings(); updateContextBar();
+        alert('Data imported.');
+      }
+    } catch { alert('Could not parse file.'); }
+  };
+  r.readAsText(file);
+}
+
+function clearData() {
+  if (confirm('Delete all entries? This cannot be undone.')) {
+    app.entries = []; app.chatHistory = [];
+    save(); renderLog(); renderInsights();
+  }
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{
+  "name": "GlucoLog",
+  "short_name": "GlucoLog",
+  "description": "Personal T1D management app",
+  "start_url": "/glucolog/",
+  "display": "standalone",
+  "background_color": "#f7f8f6",
+  "theme_color": "#2d8a55",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "medical"],
+  "shortcuts": [
+    {
+      "name": "Log food",
+      "short_name": "Food",
+      "description": "Log a meal",
+      "url": "/glucolog/?action=food",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Log insulin",
+      "short_name": "Insulin",
+      "description": "Log an insulin dose",
+      "url": "/glucolog/?action=insulin",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dose help",
+      "short_name": "Dose",
+      "description": "Calculate a dose",
+      "url": "/glucolog/?action=dose",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
