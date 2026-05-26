@@ -1644,14 +1644,14 @@ function dexAuth() {
     response_type: 'code',
     scope: 'offline_access',
   });
-  window.location.href = 'https://api.dexcom.com/v2/oauth2/login?' + params.toString();
+  window.location.href = 'https://sandbox-api.dexcom.com/v2/oauth2/login?' + params.toString();
 }
 
 async function handleDexcomCallback(code) {
   const d = app.settings.dexcom;
   if (!d.clientId || !d.clientSecret) return;
   try {
-    const res = await fetch('https://api.dexcom.com/v2/oauth2/token', {
+    const res = await fetch('https://sandbox-api.dexcom.com/v2/oauth2/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -1677,7 +1677,7 @@ async function refreshDexToken() {
   const d = app.settings.dexcom;
   if (!d.refreshToken) return false;
   try {
-    const res = await fetch('https://api.dexcom.com/v2/oauth2/token', {
+    const res = await fetch('https://sandbox-api.dexcom.com/v2/oauth2/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -1708,7 +1708,7 @@ async function dexSync() {
     const endDate = new Date().toISOString();
     const startDate = new Date(Date.now() - 3 * 3600 * 1000).toISOString(); // last 3h (Dexcom lag)
     const res = await fetch(
-      `https://api.dexcom.com/v3/users/self/egvs?startDate=${startDate}&endDate=${endDate}`,
+      `https://sandbox-api.dexcom.com/v3/users/self/egvs?startDate=${startDate}&endDate=${endDate}`,
       { headers: { Authorization: 'Bearer ' + d.accessToken } }
     );
     const data = await res.json();
